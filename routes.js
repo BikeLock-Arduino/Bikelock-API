@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { User } = require('./app'); // Import the User model from the main app file
+const { Device,Locking,LocationStatus,NotificationSent,LogAPIArduino,LogAPIPhone } = require('./app'); // Import the User model from the main app file
 
 /** Example with a model named User with 2 fields - name and email
 // POST a new user
