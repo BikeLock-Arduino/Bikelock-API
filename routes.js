@@ -95,6 +95,8 @@ router.post('/locking/phone/:deviceId', async (req, res) => {
         }
       );
       res.json(newLocking);
+
+      //TODO add log to LOG PHONE
     } 
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -159,6 +161,8 @@ router.post('locking/device/:id', async (req, res) => {
       currentLocking.location = location;
       currentLocking.save();
       res.json(currentLocking);
+
+      //TODO add log to Arduino LOG
     } 
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -166,12 +170,127 @@ router.post('locking/device/:id', async (req, res) => {
 });
 
 //POST locking/device/:id/alarm
+router.post('/locking/device/:id/alarm', async (req, res) => {
+  const { id } = req.params;
+  const { battery, location } = req.body;
+  try {
+    const currentLocking = await LocationStatus.findOne({
+      where: {
+        deviceId: id,
+        isFinishedConfirmed : false
+      }
+    });
+    const currentDevice = await Device.findByPk(id);
+    if(currentLocking == null || currentDevice == null){
+      res.status(400)
+    } else {
+      currentDevice.battery = battery;
+      currentDevice.save();
+      const newStatus = await LocationStatus.create(
+        { 
+          dateTime: new Date(), 
+          location: location,
+          lockingId: currentLocking.id
+        }
+      );
+      res.json(newStatus);
+
+      //TODO send a notification to the phone associated to the device
+        //SEND NOTIF
+        //ADD LOG TO NOTIF LOG
+      
+      //TODO add log to Arduino LOG
+    } 
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 //GET  locking/phone/:deviceId/alarm (check for alarm on phone -> checking at LocationStatus table)
-//GET  locking/phone/:deviceId/
+router.get('locking/phone/:deviceId/alarm', async (req, res) => {
+  const { deviceId } = req.params;
+  try {
+    //check if a locking already exists
+    const currentLocking = await Locking.findOne({
+      where: {
+        deviceId: deviceId,
+        isFinishedConfirmed : false
+      }
+    });
+    if(currentLocking == null){
+      res.status(400);
+    } else {
+      const currentStatuS = await LocationStatus.findAll({
+        where: {
+          lockingId: currentLocking.id
+        }
+      });
+    }
+    res.json(currentStatuS);
+
+    //TODO add log to PHONE LOG
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
 //----UNLOCKING----\\
 //POST locking/phone/:deviceId/unlock
-//POST locking/device/:id/unlock (confirm unlocking)
+router.post('/locking/phone/:deviceId/unlock', async (req, res) => {
+  const { deviceId } = req.params;
+  try {
+    //check if a locking already exists
+    const currentLocking = await Locking.findOne({
+      where: {
+        deviceId: deviceId,
+        isFinished: false,
+        isFinishedConfirmed : false
+      }
+    });
+    if(currentLocking == null){
+      res.status(400)
+    } else {
+      currentLocking.isFinished = true;
+      currentLocking.save();
+      res.json(currentLocking);
 
+      //TODO add log to LOG PHONE
+    } 
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+//POST locking/device/:id/unlock (confirm unlocking)
+router.post('locking/device/:id/unlock', async (req, res) => {
+  const { id } = req.params;
+  const { battery } = req.body;
+  try {
+    //check if a locking already exists
+    const currentLocking = await Locking.findOne({
+      where: {
+        deviceId: id,
+        isFinished : true,
+        isFinishedConfirmed : false
+      }
+    });
+    const currentDevice = await Device.findByPk(id);
+    if(currentLocking == null || currentDevice == null){
+      res.status(400);
+    } else {
+      //maj battery value
+      currentDevice.battery = battery;
+      currentDevice.save();
+      //confirm locking + location
+      currentLocking.isFinishedConfirmed = true;
+      currentLocking.save();
+      res.json(currentLocking);
+
+      //TODO add log to Arduino LOG
+    } 
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
 module.exports = router;
