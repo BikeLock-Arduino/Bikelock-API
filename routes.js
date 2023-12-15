@@ -1,44 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { Device,Locking,LocationStatus,NotificationSent,LogAPIArduino,LogAPIPhone } = require('./app'); // Import the User model from the main app file
-
-/** Example with a model named User with 2 fields - name and email
-// POST a new user
-router.post('/users', async (req, res) => {
-  const { name, email } = req.body;
-  try {
-    const newUser = await User.create({ name, email });
-    res.json(newUser);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-// GET all users
-router.get('/users', async (req, res) => {
-  try {
-    const users = await User.findAll();
-    res.json(users);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-// GET a specific user by ID
-router.get('/users/:id', async (req, res) => {
-  const { id } = req.params;
-  try {
-    const user = await User.findByPk(id);
-    if (user) {
-      res.json(user);
-    } else {
-      res.status(404).json({ error: 'User not found' });
-    }
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-*/
+const { Device,Locking,LocationStatus,NotificationSent,LogAPIArduino,LogAPIPhone } = require('./app');
 
 //GET logs
 router.get('/logArduino', async (req, res) => {
@@ -96,7 +58,7 @@ router.post('/locking/phone/:deviceId', async (req, res) => {
       );
       res.json(newLocking);
 
-      //TODO add log to LOG PHONE
+      await addToPhoneLogs(deviceId + "# Locking for a device", new Date(), true);
     } 
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -115,6 +77,8 @@ router.get('/locking/phone/:deviceId', async (req, res) => {
       }
     });
     res.json(currentLocking);
+
+    await addToPhoneLogs(deviceId+"# Check if there is pending status",new Date(),false);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -132,6 +96,8 @@ router.get('locking/device/:id', async (req, res) => {
       }
     });
     res.json(currentLocking);
+
+    await addToArduinoLogs(deviceId,"Check if there is pending status",new Date(), false);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -162,7 +128,7 @@ router.post('locking/device/:id', async (req, res) => {
       currentLocking.save();
       res.json(currentLocking);
 
-      //TODO add log to Arduino LOG
+      await addToArduinoLogs(id,"Confirm the locking for the locking ID: " + currentLocking.id + " / battery: " + battery + " / location: " + location, new Date(), true);
     } 
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -199,7 +165,7 @@ router.post('/locking/device/:id/alarm', async (req, res) => {
         //SEND NOTIF
         //ADD LOG TO NOTIF LOG
       
-      //TODO add log to Arduino LOG
+      await addToArduinoLogs(id,"Add a location status for the alarm linked to locking ID: " + currentLocking.id + " / battery: " + battery + " / location: " + location, new Date(), true);
     } 
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -228,7 +194,7 @@ router.get('locking/phone/:deviceId/alarm', async (req, res) => {
     }
     res.json(currentStatuS);
 
-    //TODO add log to PHONE LOG
+    await addToPhoneLogs("GET status for alarm linked to locking ID: " + currentLocking.id,new Date(),false);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -254,7 +220,7 @@ router.post('/locking/phone/:deviceId/unlock', async (req, res) => {
       currentLocking.save();
       res.json(currentLocking);
 
-      //TODO add log to LOG PHONE
+      await addToPhoneLogs(deviceId +"# Unlocking for locking ID: " + currentLocking.id,new Date(),true);
     } 
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -287,10 +253,42 @@ router.post('locking/device/:id/unlock', async (req, res) => {
       res.json(currentLocking);
 
       //TODO add log to Arduino LOG
+      await addToArduinoLogs(id,"Confirm unlock for locking ID: " + currentLocking.id+  " / battery: " + battery, new Date(), true);
     } 
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
+
+async function addToPhoneLogs(msg,timestamp, isPost){
+  const newLog = await LogAPIPhone.create(
+    { 
+      dateTime: timestamp, 
+      content: msg,
+      isReceived: isPost
+    }
+  );
+}
+
+async function addToArduinoLogs(deviceId,msg,timestamp, isPost){
+  const newLog = await LogAPIArduino.create(
+    { 
+      dateTime: timestamp, 
+      content: msg,
+      deviceId: deviceId,
+      isReceived: isPost
+    }
+  );
+}
+
+async function addToNotifLogs(deviceId,msg,timestamp){
+  const newLog = await NotificationSent.create(
+    { 
+      dateTime: timestamp, 
+      content: msg,
+      deviceId: deviceId
+    }
+  );
+}
 
 module.exports = router;

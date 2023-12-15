@@ -24,6 +24,11 @@ const Device = sequelize.define('Device', {
   },
 });
 
+Device.create({
+  id:1,
+  battery:0
+});
+
 const Locking = sequelize.define('Locking', {
   id: {
     type: DataTypes.INTEGER,
