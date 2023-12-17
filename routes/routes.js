@@ -291,5 +291,25 @@ module.exports = (db) => {
     );
   }
 
+  // Routes to check if the API is working as intended
+  router.get('/device',async (req,res) => {
+    try {
+      // DO NOT REMOVE -- Adding a device for proof of concept
+      let checkDeviceOne = await db.Models.Device.findByPk(1);
+      console.log('check',checkDeviceOne);
+      if(checkDeviceOne == null){
+        const created = await db.Models.Device.create({
+            battery:-1
+        });
+        console.log('in creation');
+        console.log(created);
+      }
+      const devices = await db.Models.Device.findAll();
+      res.json(devices);
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
   return router;
 }

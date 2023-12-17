@@ -8,14 +8,6 @@ module.exports =  (sequelize,Sequelize) => {
     const LogAPIArduino =  require('./log-api-arduino.model')(sequelize,Sequelize);
     const NotificationSent = require('./notification-sent.model')(sequelize,Sequelize);
     const LocationStatus = require('./location-status.model')(sequelize,Sequelize);
-    
-    // Adding a device for proof of concept
-    let checkDeviceOne = Device.findByPk(1);
-    if(checkDeviceOne == null){
-        Device.create({
-            battery:-1
-        });
-    }
 
     // Define the association (foreignKey)
     NotificationSent.belongsTo(Device, {
