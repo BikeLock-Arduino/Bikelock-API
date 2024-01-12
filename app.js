@@ -21,6 +21,11 @@ sequelize.sync()
 
 // Middleware for JSON parsing
 app.use(express.json());
+// Middleware for CORS policy avoidance
+app.use(function(req, res, next) {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  next();
+});
 
 // Start the server
 app.listen(port, () => {
