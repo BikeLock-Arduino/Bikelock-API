@@ -3,7 +3,7 @@ const router = express.Router();
 
 module.exports = (db) => {
   //GET logs
-  router.get('/logArduino', async (req, res) => {
+  router.get('/api/logArduino', async (req, res) => {
     try {
       const logArduino = await db.Models.LogAPIArduino.findAll();
       res.json(logArduino);
@@ -12,7 +12,7 @@ module.exports = (db) => {
     }
   });
 
-  router.get('/logPhone', async (req, res) => {
+  router.get('/api/logPhone', async (req, res) => {
     try {
       const logPhone = await db.Models.LogAPIPhone.findAll();
       res.json(logPhone);
@@ -21,7 +21,7 @@ module.exports = (db) => {
     }
   });
 
-  router.get('/logNotif', async (req, res) => {
+  router.get('/api/logNotif', async (req, res) => {
     try {
       const logNotif = await db.Models.NotificationSent.findAll();
       res.json(logNotif);
@@ -33,7 +33,7 @@ module.exports = (db) => {
 
   //----LOCKING----\\
   //POST locking/phone/:deviceId
-  router.post('/locking/phone/:deviceId', async (req, res) => {
+  router.post('/api/locking/phone/:deviceId', async (req, res) => {
     const { deviceId } = req.params;
     try {
       //check if a locking already exists
@@ -44,7 +44,7 @@ module.exports = (db) => {
         }
       });
       if(currentLocking != null){
-        res.status(409)
+        res.status(409);
       } else {
         const newLocking = await db.Models.Locking.create(
           { 
@@ -66,7 +66,7 @@ module.exports = (db) => {
   });
 
   //GET  locking/phone/:deviceId (get the status of the locking)
-  router.get('/locking/phone/:deviceId', async (req, res) => {
+  router.get('/api/locking/phone/:deviceId', async (req, res) => {
     const { deviceId } = req.params;
     try {
       //check if a locking already exists
@@ -85,7 +85,7 @@ module.exports = (db) => {
   });
 
   //GET  locking/device/:id (check if a locking process is pending)
-  router.get('locking/device/:id', async (req, res) => {
+  router.get('/api/locking/device/:id', async (req, res) => {
     const { id } = req.params;
     try {
       //check if a locking already exists
@@ -104,7 +104,7 @@ module.exports = (db) => {
   });
 
   //POST locking/device/:id (confirm locking)
-  router.post('locking/device/:id', async (req, res) => {
+  router.post('/api/locking/device/:id', async (req, res) => {
     const { id } = req.params;
     const { battery, location } = req.body;
     try {
@@ -136,7 +136,7 @@ module.exports = (db) => {
   });
 
   //POST locking/device/:id/alarm
-  router.post('/locking/device/:id/alarm', async (req, res) => {
+  router.post('/api/locking/device/:id/alarm', async (req, res) => {
     const { id } = req.params;
     const { battery, location } = req.body;
     try {
@@ -173,7 +173,7 @@ module.exports = (db) => {
   });
 
   //GET  locking/phone/:deviceId/alarm (check for alarm on phone -> checking at LocationStatus table)
-  router.get('locking/phone/:deviceId/alarm', async (req, res) => {
+  router.get('/api/locking/phone/:deviceId/alarm', async (req, res) => {
     const { deviceId } = req.params;
     try {
       //check if a locking already exists
@@ -202,7 +202,7 @@ module.exports = (db) => {
 
   //----UNLOCKING----\\
   //POST locking/phone/:deviceId/unlock
-  router.post('/locking/phone/:deviceId/unlock', async (req, res) => {
+  router.post('/api/locking/phone/:deviceId/unlock', async (req, res) => {
     const { deviceId } = req.params;
     try {
       //check if a locking already exists
@@ -228,7 +228,7 @@ module.exports = (db) => {
   });
 
   //POST locking/device/:id/unlock (confirm unlocking)
-  router.post('locking/device/:id/unlock', async (req, res) => {
+  router.post('/api/locking/device/:id/unlock', async (req, res) => {
     const { id } = req.params;
     const { battery } = req.body;
     try {
@@ -292,7 +292,7 @@ module.exports = (db) => {
   }
 
   // Routes to check if the API is working as intended
-  router.get('/device',async (req,res) => {
+  router.get('/api/device',async (req,res) => {
     try {
       // DO NOT REMOVE -- Adding a device for proof of concept
       let checkDeviceOne = await db.Models.Device.findByPk(1);

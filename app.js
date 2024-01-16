@@ -1,6 +1,7 @@
 const express = require('express');
 const { Sequelize, DataTypes } = require('sequelize');
 const app = express();
+const cors = require('cors');
 const port = 3000;
 
 // Connect to SQLite database using Sequelize
@@ -21,7 +22,11 @@ sequelize.sync()
 
 // Middleware for JSON parsing
 app.use(express.json());
-// Middleware for CORS policy avoidance
+
+// Middlewares for CORS policy avoidance
+app.use(cors({
+  allowedHeaders: ['Content-Type'],
+}));
 app.use(function(req, res, next) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   next();
