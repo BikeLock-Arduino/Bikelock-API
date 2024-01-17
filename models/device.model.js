@@ -8,7 +8,7 @@ module.exports = (sequelize,Sequelize) => {
         },
         battery: {
           type: Sequelize.INTEGER,
-          allowNull: false,
+          allowNull: true,
         },
     });
     

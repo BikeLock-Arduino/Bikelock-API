@@ -57,8 +57,11 @@ module.exports = (db) => {
           }
         );
         res.json(newLocking);
-
-        await addToPhoneLogs(deviceId + "# Locking for a device", new Date(), true);
+        try{
+          await addToPhoneLogs(deviceId + "# Locking for a device", new Date(), true);
+        }catch(err){
+          console.error(err);
+        }
       } 
     } catch (err) {
       res.status(500).json({ error: err.message });
@@ -77,8 +80,11 @@ module.exports = (db) => {
         }
       });
       res.json(currentLocking);
-
-      await addToPhoneLogs(deviceId+"# Check if there is pending status",new Date(),false);
+      try{
+        await addToPhoneLogs(deviceId+"# Check if there is pending status",new Date(),false);
+      }catch(err){
+        console.error(err);
+      }
     } catch (err) {
       res.status(500).json({ error: err.message });
     }
@@ -96,8 +102,11 @@ module.exports = (db) => {
         }
       });
       res.json(currentLocking);
-
-      await addToArduinoLogs(deviceId,"Check if there is pending status",new Date(), false);
+      try{
+        await addToArduinoLogs(id,"Check if there is pending status",new Date(), false);
+      } catch(err){
+        console.error('err addToArduinoLogs',err);
+      }
     } catch (err) {
       res.status(500).json({ error: err.message });
     }
@@ -127,8 +136,11 @@ module.exports = (db) => {
         currentLocking.location = location;
         currentLocking.save();
         res.json(currentLocking);
-
-        await addToArduinoLogs(id,"Confirm the locking for the locking ID: " + currentLocking.id + " / battery: " + battery + " / location: " + location, new Date(), true);
+        try{
+          await addToArduinoLogs(id,"Confirm the locking for the locking ID: " + currentLocking.id + " / battery: " + battery + " / location: " + location, new Date(), true);
+        } catch(err){
+          console.error(err);
+        }
       } 
     } catch (err) {
       res.status(500).json({ error: err.message });
@@ -164,8 +176,11 @@ module.exports = (db) => {
         //TODO send a notification to the phone associated to the device
           //SEND NOTIF
           //ADD LOG TO NOTIF LOG
-        
-        await addToArduinoLogs(id,"Add a location status for the alarm linked to locking ID: " + currentLocking.id + " / battery: " + battery + " / location: " + location, new Date(), true);
+        try{
+          await addToArduinoLogs(id,"Add a location status for the alarm linked to locking ID: " + currentLocking.id + " / battery: " + battery + " / location: " + location, new Date(), true);
+        }catch(err){
+          console.error(err);
+        }
       } 
     } catch (err) {
       res.status(500).json({ error: err.message });
@@ -194,7 +209,11 @@ module.exports = (db) => {
       }
       res.json(currentStatuS);
 
-      await addToPhoneLogs("GET status for alarm linked to locking ID: " + currentLocking.id,new Date(),false);
+      try{
+        await addToPhoneLogs("GET status for alarm linked to locking ID: " + currentLocking.id,new Date(),false);
+      }catch(err){
+        console.error(err);
+      }
     } catch (err) {
       res.status(500).json({ error: err.message });
     }
@@ -220,7 +239,11 @@ module.exports = (db) => {
         currentLocking.save();
         res.json(currentLocking);
 
-        await addToPhoneLogs(deviceId +"# Unlocking for locking ID: " + currentLocking.id,new Date(),true);
+        try{
+          await addToPhoneLogs(deviceId +"# Unlocking for locking ID: " + currentLocking.id,new Date(),true);
+        }catch(err){
+          console.error(err);
+        }
       } 
     } catch (err) {
       res.status(500).json({ error: err.message });
@@ -253,7 +276,11 @@ module.exports = (db) => {
         res.json(currentLocking);
 
         //TODO add log to Arduino LOG
-        await addToArduinoLogs(id,"Confirm unlock for locking ID: " + currentLocking.id+  " / battery: " + battery, new Date(), true);
+        try{
+          await addToArduinoLogs(id,"Confirm unlock for locking ID: " + currentLocking.id+  " / battery: " + battery, new Date(), true);
+        }catch(err){
+          console.error(err);
+        }
       } 
     } catch (err) {
       res.status(500).json({ error: err.message });
