@@ -12,7 +12,7 @@ const sequelize = new Sequelize({
 });
 
 // Synchronize the database and create tables
-sequelize.sync()
+sequelize.sync({ logging: console.log })
   .then(() => {
     console.log('Database and tables created!');
   })

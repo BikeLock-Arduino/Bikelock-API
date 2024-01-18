@@ -11,28 +11,36 @@ module.exports =  (sequelize,Sequelize) => {
 
     // Define the association (foreignKey)
     NotificationSent.belongsTo(Device, {
+        as:'device',
         foreignKey: 'deviceId',
     });
     LogAPIArduino.belongsTo(Device, {
+        as:'device',
         foreignKey: 'deviceId',
     });
     Locking.belongsTo(Device, {
+        as:'device',
         foreignKey: 'deviceId',
     });
     LocationStatus.belongsTo(Locking, {
+        as:'locking',
         foreignKey: 'lockingId',
     });
     
     Device.hasMany(NotificationSent, {
+        as: 'notificationSents',
         foreignKey: 'deviceId',
     });
     Device.hasMany(LogAPIArduino, {
+        as: 'logAPIArduinos',
         foreignKey: 'deviceId',
     });
     Device.hasMany(Locking, {
+        as: 'lockings',
         foreignKey: 'deviceId',
     });
     Locking.hasMany(LocationStatus, {
+        as: 'locationStatus',
         foreignKey: 'lockingId',
     });
 

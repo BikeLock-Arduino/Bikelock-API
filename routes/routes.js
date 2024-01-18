@@ -77,16 +77,23 @@ module.exports = (db) => {
         where: {
           deviceId: deviceId,
           isFinishedConfirmed : false
-        }
+        },
+        include: [
+          { 
+            model: db.Models.LocationStatus,
+            as:'locationStatus'
+          },
+        ]
       });
       res.json(currentLocking);
       try{
         await addToPhoneLogs(deviceId+"# Check if there is pending status",new Date(),false);
       }catch(err){
-        console.error(err);
+        console.error('err',err);
       }
     } catch (err) {
       res.status(500).json({ error: err.message });
+      console.error('err',err);
     }
   });
 
@@ -152,7 +159,7 @@ module.exports = (db) => {
     const { id } = req.params;
     const { battery, location } = req.body;
     try {
-      const currentLocking = await db.Models.LocationStatus.findOne({
+      const currentLocking = await db.Models.Locking.findOne({
         where: {
           deviceId: id,
           isFinishedConfirmed : false
@@ -171,7 +178,21 @@ module.exports = (db) => {
             lockingId: currentLocking.id
           }
         );
-        res.json(newStatus);
+        console.log('check',newStatus);
+        
+        const locking = await db.Models.Locking.findOne({
+          where: {
+            deviceId: id,
+            isFinishedConfirmed : false
+          },
+          include: [
+            { 
+              model: db.Models.LocationStatus,
+              as:'locationStatus'
+            },
+          ]
+        });
+        res.json(locking);
 
         //TODO send a notification to the phone associated to the device
           //SEND NOTIF
@@ -206,8 +227,8 @@ module.exports = (db) => {
             lockingId: currentLocking.id
           }
         });
+        res.json(currentStatuS);
       }
-      res.json(currentStatuS);
 
       try{
         await addToPhoneLogs("GET status for alarm linked to locking ID: " + currentLocking.id,new Date(),false);
