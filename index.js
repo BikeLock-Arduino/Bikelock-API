@@ -43,7 +43,7 @@ db.sequelize = sequelize;
 db.Models = require('./models/models')(sequelize,Sequelize);
 
 // Use the routes from routes.js
-const routes = require('./routes/routes')(db);
-app.use(routes);
+const routes = require('./api/routes.js')(db);
+app.use("/",routes);
 
 module.exports = db;

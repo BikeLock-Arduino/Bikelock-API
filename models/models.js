@@ -1,4 +1,4 @@
-const { LocationStatus } = require('../app');
+const { LocationStatus } = require('..');
 
 module.exports =  (sequelize,Sequelize) => {
     // Model's import
