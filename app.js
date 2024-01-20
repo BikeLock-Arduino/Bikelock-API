@@ -2,7 +2,7 @@ const express = require('express');
 const { Sequelize, DataTypes } = require('sequelize');
 const app = express();
 const cors = require('cors');
-const port = 3000;
+const port = 80;
 
 // Connect to SQLite database using Sequelize
 const sequelize = new Sequelize({
