@@ -3,6 +3,11 @@
 API for Bikelock project. Coupled with an Arduino and a Web/Mobile App.
 The API is using **Node.js** + **Express** for the running server. The ORM to access the database is **Sequelize** and the database server used is **SQLite**.
 
+**Warning**: to make it easy to run with the Arduino, host your API online.
+
+## Run the project
+After cloning : *npm i* and then to run the project :*node index.js*
+
 ## Routes
 ### TEST 
 *GET /api/device* : get the devices that are in the database and create the first one if he is missing
